@@ -1,6 +1,7 @@
 package com.example.photopickerapp
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -54,11 +55,17 @@ fun LoginPage(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .padding(horizontal = 8.dp)
     ) {
-
-        var email by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var chState by remember { mutableStateOf(true) }
         val context = LocalContext.current
+        // read data for checking if user login or not
+        val prefs = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val savedEmail = prefs.getString("email", "")!!
+        val savedPassword = prefs.getString("pass", "")!!
+
+
+        var email by remember { mutableStateOf(savedEmail) }
+        var password by remember { mutableStateOf(savedPassword) }
+        var chState by remember { mutableStateOf(true) }
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -85,7 +92,7 @@ fun LoginPage(modifier: Modifier = Modifier) {
             )
         }
         Button(
-            onClick = { saveData(email, password , chState   ,context) },
+            onClick = { saveData(email, password, chState, context) },
             modifier = modifier.align(Alignment.CenterHorizontally)
         ) {
             Text(text = stringResource(id = R.string.login))
@@ -105,6 +112,9 @@ fun saveData(email: String, password: String, chState: Boolean, context: Context
         editor.putString("password", "")
     }
     editor.apply()
+
+    val i = Intent(context, PictureChooserActivity::class.java)
+    context.startActivity(i)
 
 
 }
